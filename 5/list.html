@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+
+</head>
+<body>
+<script>
+    let ulElem = document.createElement("ul")
+    ulElem.classList.add("list-group")
+    ulElem.classList.add('col-3')
+    ulElem.id = "wrapper"
+    document.body.appendChild(ulElem)
+    if (localStorage.getItem("carts")) {
+        let carts = JSON.parse(localStorage.getItem("carts"))
+        Object.entries(carts).forEach(([k, v]) => {
+         Object.keys(v).forEach((kk) => createLi(kk,v[kk], k))
+            deleteButton(k, "deleteOne")
+            deleteButton(k, "deleteAll", false)
+        })
+    }
+
+    function deleteButton(i, name, hasId=true) {
+        let deleteButton = document.createElement("button")
+        deleteButton.setAttribute("type", "button")
+        deleteButton.classList.add("btn")
+        deleteButton.classList.add("btn-danger")
+        deleteButton.name = name
+        if (hasId) {
+            deleteButton.id = i
+        }
+        deleteButton.innerHTML = name
+        ulElem.appendChild(deleteButton)
+    }
+
+
+    function  createLi(key, val, index) {
+        let liElem = document.createElement("li");
+        liElem.classList.add("list-group-item")
+        liElem.id = index
+        liElem.innerHTML = `${key}:   ${val}`
+        ulElem.appendChild(liElem)
+    }
+
+    document.getElementById("wrapper").addEventListener("click", (e) => {
+        e.preventDefault()
+        if (confirm(`are you sure you want delete ?`)) {
+
+            if (e.target.id && e.target.name === 'deleteOne') {
+                let id = e.target.id
+                let allItem = JSON.parse(localStorage.getItem("carts"))
+                if (allItem !== null && typeof allItem[id] !== 'undefined') {
+                    allItem.splice(id, 1)
+                    //alternative arr = arr.filter(val => val.id !== id);  and store
+                    localStorage.setItem("carts", JSON.stringify(allItem))
+                    window.location.reload()
+                }
+            } else if (!e.target.id && e.target.name === 'deleteAll') {
+                if (confirm(`are you sure you want delete All elements?`)) {
+                    localStorage.removeItem("carts")
+                    window.location.reload()
+                }
+            }
+        }
+
+    })
+</script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+
+</body>
+</html>
